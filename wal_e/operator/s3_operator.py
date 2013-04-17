@@ -6,7 +6,7 @@ import logging
 import os
 import sys
 
-from exception import IOerror
+from exceptions import IOError
 
 import wal_e.worker.s3_worker as s3_worker
 import wal_e.tar_partition as tar_partition
@@ -205,8 +205,8 @@ class S3Backup(object):
             while uploads:
                 try:
                     uploads.pop().get()
-                except IOerror:
-                    logger.warning("IOerror encountered",
+                except IOError:
+                    logger.warning("IOError encountered",
                             detail=("Moving on..."))
 
             pool.join()
