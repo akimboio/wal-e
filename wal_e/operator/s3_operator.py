@@ -6,6 +6,8 @@ import logging
 import os
 import sys
 
+from exception import IOerror
+
 import wal_e.worker.s3_worker as s3_worker
 import wal_e.tar_partition as tar_partition
 import wal_e.log_help as log_help
@@ -198,8 +200,14 @@ class S3Backup(object):
                         [backup_s3_prefix, tpart, per_process_limit,
                          self.gpg_key_id]))
         finally:
+            logger.info(msg='total_size = {}'.format(total_size))
+            logger.info(msg='uploads length = {}'.format(len(uploads)))
             while uploads:
-                uploads.pop().get()
+                try:
+                    uploads.pop().get()
+                except IOerror:
+                    logger.warning("IOerror encountered",
+                            detail=("Moving on..."))
 
             pool.join()
 
